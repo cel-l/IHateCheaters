@@ -1,6 +1,5 @@
 ﻿using GorillaLocomotion;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace IHateCheaters.Models;
 
@@ -8,12 +7,6 @@ public class MiscHandler : MonoBehaviour
 {
     public static Transform? RealRightController;
     public static Transform? RealLeftController;
-    private static readonly int SrcBlend = Shader.PropertyToID("_SrcBlend");
-    private static readonly int DstBlend = Shader.PropertyToID("_DstBlend");
-    private static readonly int SrcBlendAlpha = Shader.PropertyToID("_SrcBlendAlpha");
-    private static readonly int DstBlendAlpha = Shader.PropertyToID("_DstBlendAlpha");
-    private static readonly int ZWrite = Shader.PropertyToID("_ZWrite");
-    private static readonly int AlphaToMask = Shader.PropertyToID("_AlphaToMask");
 
     private void Start()
     {

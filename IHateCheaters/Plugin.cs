@@ -7,6 +7,7 @@ using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Networking;
 using static UnityEngine.Debug;
+
 // ReSharper disable NotAccessedField.Global
 // ReSharper disable UnusedMember.Local
 
@@ -99,7 +100,8 @@ public class Plugin : BaseUnityPlugin
             var json = JsonUtility.FromJson<VersionResponse>(jsonString);
 
             if (json.outdated)
-                NotificationController.AppendMessage(Alias, $"Mod is outdated! Latest: {json.latest_version}", false, 10f);
+                NotificationController.AppendMessage(Alias, $"Mod is outdated! Latest: {json.latest_version}", false,
+                    10f);
         }
     }
 

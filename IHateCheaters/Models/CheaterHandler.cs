@@ -2,16 +2,17 @@
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Networking;
+
+// ReSharper disable AsyncVoidMethod
+
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable UnusedMember.Global
 
 namespace IHateCheaters.Models
 {
-    public class CheaterHandler : MonoBehaviour
+    public abstract class CheaterHandler : MonoBehaviour
     {
         private static Dictionary<string, ModData>? ModList = new();
-        private static bool modsLoaded;
-
         private const string ModsEndpoint = "https://api.aeris.now/mods";
 
         private static readonly Dictionary<string, string[]> CosmeticList = new()
@@ -23,6 +24,8 @@ namespace IHateCheaters.Models
             { "LBADE.", ["Finger Painter", "FF0000", "00FF00", "0000FF"] },
             { "LBANI.", ["Another Axiom Creator", "4A1B82", "1C8A53"] }
         };
+
+        private static bool modsLoaded;
 
         private async void Start()
         {
@@ -44,7 +47,7 @@ namespace IHateCheaters.Models
 
             modsLoaded = true;
         }
-        
+
         private static string ApplyGradient(string text, params string[] hexColors)
         {
             if (string.IsNullOrEmpty(text) || hexColors.Length == 0) return text;
@@ -77,7 +80,7 @@ namespace IHateCheaters.Models
             return result;
         }
 
-       public static async Task<string?> IsCheating(NetPlayer? player)
+        public static async Task<string?> IsCheating(NetPlayer? player)
         {
             var totalFps = 0;
             var checkFrames = 30;
@@ -134,7 +137,7 @@ namespace IHateCheaters.Models
                 return null;
             }
         }
-        
+
         public static VRRig? GetVRRigFromPlayer(NetPlayer? player)
         {
             try
@@ -149,8 +152,8 @@ namespace IHateCheaters.Models
 
         [Serializable]
         private class Wrapper;
-        
-        public class ModData
+
+        public abstract class ModData
         {
             public string? Name { get; set; }
             public string? Color { get; set; }

@@ -1,6 +1,7 @@
 ﻿using GorillaLocomotion;
 using UnityEngine;
-using UnityEngine.InputSystem; 
+using UnityEngine.InputSystem;
+
 // ReSharper disable Unity.PreferNonAllocApi
 
 namespace IHateCheaters.Models;
@@ -16,7 +17,7 @@ public class GunLib
 {
     private const int ConstraintIterations = 5;
     private const int NumPoints = 50;
-    public static GunType GunType = GunType.Straight;
+    public static readonly GunType GunType = GunType.Straight;
     private readonly float gravity = Physics.gravity.magnitude;
     public VRRig? ChosenRig;
     private LineRenderer? gunLine;
@@ -49,12 +50,13 @@ public class GunLib
 
     public void LateUpdate()
     {
-        var gripPressed = ControllerInputPoller.instance.rightControllerGripFloat > 0.7f && ControllerInputPoller.instance.rightControllerSecondaryButton;
+        var gripPressed = ControllerInputPoller.instance.rightControllerGripFloat > 0.7f &&
+                          ControllerInputPoller.instance.rightControllerSecondaryButton;
         var triggerPressed = ControllerInputPoller.instance.rightControllerIndexFloat > 0.7f;
         if (gripPressed)
         {
             if (!MiscHandler.RealRightController) return;
-            
+
             var realRightController = MiscHandler.RealRightController;
             var gunPosition = realRightController.position;
             var gunDirection = realRightController.forward;

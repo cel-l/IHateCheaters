@@ -3,6 +3,7 @@ using HarmonyLib;
 using UnityEngine;
 
 namespace IHateCheaters;
+
 internal static class HarmonyPatches
 {
     private static Harmony? _instance;

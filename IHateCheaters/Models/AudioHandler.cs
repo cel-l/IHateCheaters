@@ -1,8 +1,10 @@
 ﻿using System.Reflection;
 using UnityEngine;
+
 // ReSharper disable MustUseReturnValue
 
 namespace IHateCheaters.Models;
+
 public static class AudioHandler
 {
     private static AudioClip? _notificationClip;
