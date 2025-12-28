@@ -1,7 +1,7 @@
 A utility mod for Gorilla Tag that helps keep your game fair by detecting cheats and notifying you about player info, be able to see who’s using certain mods, low FPS and other potential cheats, all without slowing down your game or having a fat menu in your hand
 
 # Features 📝 
-- Auto-detect cheats
+- Auto-detect mods/cheats
   - Automatically identifies players using mods through a list of custom properties and other patterns (such as iiDk's menu's "goldentrophy" name)
   - The mod automatically scans all players periodically and when joining a room and whenever new players appear
 - Framerate monitoring
