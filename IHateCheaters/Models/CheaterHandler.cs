@@ -104,6 +104,11 @@ namespace IHateCheaters.Models
                     .Select(c => ApplyGradient(c.Value[0], c.Value.Skip(1).ToArray()))
                     .ToList();
 
+                var cosmeticSet = rig.cosmeticSet;
+                bool hasCosmetX = cosmeticSet.items.Any(c => !c.isNullItem && !rig.concatStringOfCosmeticsAllowed.Contains(c.itemName));
+                if (hasCosmetX && !rig.inTryOnRoom)
+                    detectedMods.Add("<color=#d91111>CosmetX</color>");
+                
                 var fpsField = Traverse.Create(rig).Field("fps");
                 for (var i = 0; i < checkFrames; i++)
                 {
