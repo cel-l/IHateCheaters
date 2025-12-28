@@ -93,10 +93,14 @@ namespace IHateCheaters.Models
                 var playerRef = player?.GetPlayerRef();
                 if (ModList == null) return null;
 
-                var detectedMods = ModList
-                    .Where(m => playerRef != null && playerRef.CustomProperties.ContainsKey(m.Key))
-                    .Select(m => $"<color=#{m.Value.Color}>{m.Value.Name}</color>")
-                    .ToList();
+                var detectedMods = new List<string>();
+                var detectedFlags = new List<string>();
+
+                detectedMods.AddRange(
+                    ModList
+                        .Where(m => playerRef != null && playerRef.CustomProperties.ContainsKey(m.Key))
+                        .Select(m => $"<color=#{m.Value.Color}>{m.Value.Name}</color>")
+                );
 
                 var allowedCosmetics = rig.concatStringOfCosmeticsAllowed;
                 var ownedCosmetics = CosmeticList
@@ -105,10 +109,13 @@ namespace IHateCheaters.Models
                     .ToList();
 
                 var cosmeticSet = rig.cosmeticSet;
-                bool hasCosmetX = cosmeticSet.items.Any(c => !c.isNullItem && !rig.concatStringOfCosmeticsAllowed.Contains(c.itemName));
+                bool hasCosmetX = cosmeticSet.items.Any(c =>
+                    !c.isNullItem && !rig.concatStringOfCosmeticsAllowed.Contains(c.itemName)
+                );
+
                 if (hasCosmetX && !rig.inTryOnRoom)
-                    detectedMods.Add("<color=#d91111>CosmetX</color>");
-                
+                    detectedFlags.Add("<color=#d91111>CosmetX</color>");
+
                 var fpsField = Traverse.Create(rig).Field("fps");
                 for (var i = 0; i < checkFrames; i++)
                 {
@@ -120,9 +127,31 @@ namespace IHateCheaters.Models
 
                 var avg = totalFps / checkFrames;
                 if (avg < 49)
-                    detectedMods.Add($"Low FPS ({avg})");
+                    detectedFlags.Add($"Low FPS ({avg})");
 
-                if (detectedMods.Count == 0 && ownedCosmetics.Count == 0)
+                var isSpoofer = detectedMods.Count >= ModList.Count / 2;
+
+                if (isSpoofer)
+                {
+                    if (ownedCosmetics.Count == 0 && detectedFlags.Count == 0)
+                        return $"{player?.NickName} is likely using a mod spoofer to hide their mods.";
+
+                    var spooferResult = player?.NickName;
+
+                    if (ownedCosmetics.Count > 0)
+                        spooferResult += " is a " + string.Join(", ", ownedCosmetics);
+
+                    if (detectedFlags.Count > 0)
+                        spooferResult += ownedCosmetics.Count > 0
+                            ? " and has " + string.Join(", ", detectedFlags)
+                            : " has " + string.Join(", ", detectedFlags);
+
+                    spooferResult += " and is likely using a mod spoofer to hide their mods.";
+
+                    return spooferResult;
+                }
+
+                if (detectedMods.Count == 0 && detectedFlags.Count == 0 && ownedCosmetics.Count == 0)
                     return null;
 
                 var result = player?.NickName;
@@ -130,10 +159,12 @@ namespace IHateCheaters.Models
                 if (ownedCosmetics.Count > 0)
                     result += " is a " + string.Join(", ", ownedCosmetics);
 
-                if (detectedMods.Count > 0)
+                var allFindings = detectedMods.Concat(detectedFlags).ToList();
+
+                if (allFindings.Count > 0)
                     result += ownedCosmetics.Count > 0
-                        ? " and is using " + string.Join(", ", detectedMods)
-                        : " is using " + string.Join(", ", detectedMods);
+                        ? " and is using " + string.Join(", ", allFindings)
+                        : " is using " + string.Join(", ", allFindings);
 
                 return result;
             }
