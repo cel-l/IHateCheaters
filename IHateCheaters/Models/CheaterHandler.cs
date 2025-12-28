@@ -91,32 +91,37 @@ namespace IHateCheaters.Models
                 if (!rig) return null;
 
                 var playerRef = player?.GetPlayerRef();
-                if (ModList == null) return null;
+                if (playerRef == null) return null;
+                if (ModList == null || ModList.Count == 0) return null;
 
-                var detectedMods = new List<string>();
+                var detectedMods = new List<ModData>();
                 var detectedFlags = new List<string>();
 
-                detectedMods.AddRange(
-                    ModList
-                        .Where(m => playerRef != null && playerRef.CustomProperties.ContainsKey(m.Key))
-                        .Select(m => $"<color=#{m.Value.Color}>{m.Value.Name}</color>")
-                );
+                foreach (var kv in ModList)
+                {
+                    if (playerRef.CustomProperties.ContainsKey(kv.Key))
+                        detectedMods.Add(kv.Value);
+                }
 
                 var allowedCosmetics = rig.concatStringOfCosmeticsAllowed;
+
                 var ownedCosmetics = CosmeticList
                     .Where(c => allowedCosmetics.Contains(c.Key))
                     .Select(c => ApplyGradient(c.Value[0], c.Value.Skip(1).ToArray()))
                     .ToList();
 
                 var cosmeticSet = rig.cosmeticSet;
-                bool hasCosmetX = cosmeticSet.items.Any(c =>
-                    !c.isNullItem && !rig.concatStringOfCosmeticsAllowed.Contains(c.itemName)
+
+                var hasCosmetX = cosmeticSet.items.Any(c =>
+                    !c.isNullItem &&
+                    !allowedCosmetics.Contains(c.itemName)
                 );
 
                 if (hasCosmetX && !rig.inTryOnRoom)
                     detectedFlags.Add("<color=#d91111>CosmetX</color>");
 
                 var fpsField = Traverse.Create(rig).Field("fps");
+
                 for (var i = 0; i < checkFrames; i++)
                 {
                     if (fpsField.GetValue() is int fps)
@@ -125,28 +130,26 @@ namespace IHateCheaters.Models
                     await Task.Delay(100);
                 }
 
-                var avg = totalFps / checkFrames;
-                if (avg < 49)
-                    detectedFlags.Add($"Low FPS ({avg})");
+                var avgFps = totalFps / checkFrames;
 
-                var isSpoofer = detectedMods.Count >= ModList.Count / 2;
+                if (avgFps < 49)
+                    detectedFlags.Add($"Low FPS ({avgFps})");
 
-                if (isSpoofer)
+                var modHitRatio = (float)detectedMods.Count / ModList.Count;
+
+                var likelySpoofer =
+                    modHitRatio >= 0.75f &&
+                    detectedMods.Count >= 6 &&
+                    ownedCosmetics.Count == 0;
+
+                if (likelySpoofer)
                 {
-                    if (ownedCosmetics.Count == 0 && detectedFlags.Count == 0)
-                        return $"{player?.NickName} is likely using a mod spoofer to hide their mods.";
-
                     var spooferResult = player?.NickName;
 
-                    if (ownedCosmetics.Count > 0)
-                        spooferResult += " is a " + string.Join(", ", ownedCosmetics);
-
                     if (detectedFlags.Count > 0)
-                        spooferResult += ownedCosmetics.Count > 0
-                            ? " and has " + string.Join(", ", detectedFlags)
-                            : " has " + string.Join(", ", detectedFlags);
+                        spooferResult += " has " + string.Join(", ", detectedFlags);
 
-                    spooferResult += " and is likely using a mod spoofer to hide their mods.";
+                    spooferResult += " and is likely using a mod spoofer.";
 
                     return spooferResult;
                 }
@@ -159,12 +162,18 @@ namespace IHateCheaters.Models
                 if (ownedCosmetics.Count > 0)
                     result += " is a " + string.Join(", ", ownedCosmetics);
 
-                var allFindings = detectedMods.Concat(detectedFlags).ToList();
+                var modStrings = detectedMods
+                    .Select(m => $"<color=#{m.Color}>{m.Name}</color>")
+                    .ToList();
+
+                var allFindings = modStrings.Concat(detectedFlags).ToList();
 
                 if (allFindings.Count > 0)
+                {
                     result += ownedCosmetics.Count > 0
                         ? " and is using " + string.Join(", ", allFindings)
                         : " is using " + string.Join(", ", allFindings);
+                }
 
                 return result;
             }
