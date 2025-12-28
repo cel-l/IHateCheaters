@@ -1,4 +1,6 @@
+# IHateCheaters ⛔
 A utility mod for Gorilla Tag that helps keep your game fair by detecting cheats and notifying you about player info, be able to see who’s using certain mods, low FPS and other potential cheats, all without slowing down your game or having a fat menu in your hand
+![all](https://img.shields.io/github/downloads/cel-l/IHateCheaters/total)
 
 # Features 📝 
 - Auto-detect mods/cheats
