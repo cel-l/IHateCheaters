@@ -13,7 +13,7 @@ A utility mod for Gorilla Tag that helps keep your game fair by detecting cheats
 - Manual player checks with gun
   - You can optionally target players with a gun to trigger a check in case you missed a notification
 
-# Installation 🚀
+# Installation 📁
 1. Download the `IHateCheaters.zip` file from the [releases page](<https://github.com/cel-l/IHateCheaters/releases/tag/v1.0.0>)
 2. Extract the `IHateCheaters` folder containing two `.dll` files into your `plugins` folder
 3. Make sure `MonkeNotificationLib.dll` is also in the `IHateCheaters` folder inside `plugins`
